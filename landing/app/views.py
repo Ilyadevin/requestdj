@@ -17,7 +17,7 @@ def index(request):
 
 
 def landing(request):
-    if 'ab-test-arg' in request.GET['app/landing_alternate.html' or template_original]:
+    if 'ab-test-arg' in request.GET['app/landing_alternate.html']:
         counter_click[template_test] += 1
     else:
         counter_click[template_original] += 1
