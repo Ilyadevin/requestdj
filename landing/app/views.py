@@ -8,10 +8,14 @@ template_original = 'landing.html'
 template_test = 'app/landing_alternate.html'
 
 
+# Александр, здравствуйте, забыл написать в сообщении коммент.
+# с возвращением шаблонов - мне в данном случае нужно возвращать два шаблона "test" & "original"?
 def index(request):
     if 'from-landing' in request.GET:
         counter_show['from-landing'] += 1
-        return render_to_response('index.html')
+        return render_to_response(template_original)
+    elif 'from-landing' not in request.GET:
+        return render_to_response(template_test)
     else:
         pass
     return render_to_response('index.html')
@@ -26,6 +30,7 @@ def landing(request):
     return render_to_response(template_original, template_test)
 
 
+# Правильно ли я поступил с переменными в методе stats?
 def stats(request):
     global test, original
     try:
