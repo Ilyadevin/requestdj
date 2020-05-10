@@ -19,12 +19,11 @@ def index(request):
 def landing(request):
     if request.GET['ab-test-arg']:
         counter_click[template_test] += 1
-        return render_to_response(counter_click[template_test])
+        return render_to_response('app/landing_alternate.html', context={'some_counter': counter_click[template_test]})
     elif not request.GET['ab-test-arg']:
         counter_click[template_original] += 1
-        return render_to_response(counter_click[template_original])
-    else:
-        pass
+        return render_to_response('landing.html', context={'some_counter': counter_click[template_original]})
+    return render_to_response('landing.html', 'app/landing_alternate.html', )
 
 
 def stats(request):
