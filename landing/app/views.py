@@ -10,6 +10,7 @@ template_test = 'app/landing_alternate.html'
 
 def index(request):
     if 'from-landing' in request.GET:
+        request.GET.click()
         counter_show['from-landing'] += 1
         return render_to_response('index.html')
     else:
