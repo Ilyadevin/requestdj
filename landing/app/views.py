@@ -10,7 +10,6 @@ template_test = 'app/landing_alternate.html'
 
 def index(request):
     if 'from-landing' in request.GET:
-        request.GET.click()
         counter_show['from-landing'] += 1
         return render_to_response('index.html')
     else:
@@ -18,28 +17,32 @@ def index(request):
 
 
 def landing(request):
-    if request.GET['ab-test-arg']:
+    if request.GET.get('ab-test-arg', False):
         counter_click[template_test] += 1
         return render_to_response('app/landing_alternate.html', context={'some_counter': counter_click[template_test]})
-    elif not request.GET['ab-test-arg']:
+    elif not request.GET.get('ab-test-arg', False):
         counter_click[template_original] += 1
         return render_to_response('landing.html', context={'some_counter': counter_click[template_original]})
-    return render_to_response('landing.html', 'app/landing_alternate.html', )
+    return render_to_response(template_original, template_test, )
 
 
 def stats(request):
-    original = counter_click[template_original] / counter_show[template_original]
-    test = counter_click[template_test] / counter_show[template_test]
-    if original == ZeroDivisionError:
-        return render_to_response('stats.html', context={'text': f'Original - {ZeroDivisionError} - Нет переходов',
-                                                         }
-                                  )
-    elif test == ZeroDivisionError:
-        return render_to_response('stats.html', context={'text': f'Test - {ZeroDivisionError} - Нет переходов',
-                                                         }
+    try:
+        original = counter_click[template_original] / counter_show[template_original]
+    except ZeroDivisionError as zero_error:
+        original = 1
+    try:
+        test = counter_click[template_test] / counter_show[template_test]
+    except ZeroDivisionError as zero_error:
+        test = 1
+    if original == 0 and test == 0 in request.GET:
+        return render_to_response('stats.html', context={
+            'original_conversion': f'original_conversion - {ZeroDivisionError} - Нет переходов',
+            'test_conversion': f'test_conversion - {ZeroDivisionError} - Нет переходов',
+                                                            }
                                   )
     else:
-        return render_to_response('stats.html', context={'test': test,
-                                                         'original': original,
+        return render_to_response('stats.html', context={'test_conversion': test,
+                                                         'original_conversion': original,
                                                          }
                                   )
