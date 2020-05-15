@@ -1,6 +1,3 @@
-import math
-from urllib.parse import urlencode
-
 from django.shortcuts import render_to_response, redirect
 from django.urls import reverse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -16,10 +13,10 @@ def bus_stations(request):
     with open('data-398-2018-08-30.csv', 'r', encoding='cp1251') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
-            stations_info.append({'Name': row['StationName'], 'Street': row['Street'],
+            stations_info.append({'Name': f"{row['StationName'], row['Direction']}", 'Street': row['Street'],
                                   'District': row['District']})
-
     paginator = Paginator(stations_info, 15)
+    print(paginator.count)
     current_page = request.GET.get('page', 1)
     try:
         stations = paginator.get_page(current_page)
