@@ -5,25 +5,25 @@ from django.shortcuts import render_to_response
 counter_show = Counter()
 counter_click = Counter()
 template_original = 'landing.html'
-template_test = 'app/landing_alternate.html'
+template_test = 'landing_alternate.html'
 
 
 def index(request):
-    if 'from-landing' in request.GET:
-        counter_show['from-landing'] += 1
+    if request.GET['from-landing'] == 'original':
+        counter_show['from-landing=original'] += 1
         return render_to_response('index.html')
     else:
+        counter_show['from-landing=test'] += 1
         return render_to_response('index.html')
 
 
 def landing(request):
-    if request.GET.get('ab-test-arg', False):
-        counter_click[template_test] += 1
-        return render_to_response('app/landing_alternate.html', context={'some_counter': counter_click[template_test]})
-    elif not request.GET.get('ab-test-arg', False):
+    if request.GET['ab-test-arg'] == 'original':
         counter_click[template_original] += 1
         return render_to_response('landing.html', context={'some_counter': counter_click[template_original]})
-    return render_to_response(template_original, template_test, )
+    else:
+        counter_click[template_test] += 1
+        return render_to_response('landing_alternate.html', context={'some_counter': counter_click[template_test]})
 
 
 def stats(request):
@@ -39,7 +39,7 @@ def stats(request):
         return render_to_response('stats.html', context={
             'original_conversion': f'original_conversion - {ZeroDivisionError} - Нет переходов',
             'test_conversion': f'test_conversion - {ZeroDivisionError} - Нет переходов',
-                                                            }
+        }
                                   )
     else:
         return render_to_response('stats.html', context={'test_conversion': test,
