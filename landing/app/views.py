@@ -9,32 +9,38 @@ template_test = 'landing_alternate.html'
 
 
 def index(request):
-    if request.GET['from-landing'] == 'original':
-        counter_show['from-landing=original'] += 1
+    if request.GET.get('from-landing') == 'original':
+        counter_click['from-landing=original'] += 1
+        print('original_from', counter_click['from-landing=original'])
+        return render_to_response('index.html')
+    elif request.GET.get('from-landing') == 'test':
+        counter_click['from-landing=test'] += 1
+        print('test_from', counter_click['from-landing=test'])
         return render_to_response('index.html')
     else:
-        counter_show['from-landing=test'] += 1
         return render_to_response('index.html')
 
 
 def landing(request):
     if request.GET['ab-test-arg'] == 'original':
-        counter_click[template_original] += 1
+        counter_show['ab-test-arg=original'] += 1
+        print('a-b_original', counter_show['ab-test-arg=original'])
         return render_to_response('landing.html', context={'some_counter': counter_click[template_original]})
     else:
-        counter_click[template_test] += 1
+        counter_show['ab-test-arg=test'] += 1
+        print('a-b_test', counter_show['ab-test-arg=test'])
         return render_to_response('landing_alternate.html', context={'some_counter': counter_click[template_test]})
 
 
 def stats(request):
-    try:
-        original = counter_click[template_original] / counter_show[template_original]
-    except ZeroDivisionError as zero_error:
-        original = 1
-    try:
-        test = counter_click[template_test] / counter_show[template_test]
-    except ZeroDivisionError as zero_error:
-        test = 1
+    if counter_show['ab-test-arg=original'] == 0 and counter_click['from-landing=original'] == 0:
+        original = 0
+    else:
+        original = counter_click['from-landing=original'] / counter_show['ab-test-arg=original']
+    if counter_click['from-landing=test'] == 0 and counter_click['ab-test-arg=test'] == 0:
+        test = 0
+    else:
+        test = counter_show['ab-test-arg=test'] / counter_click['from-landing=test']
     if original == 0 and test == 0 in request.GET:
         return render_to_response('stats.html', context={
             'original_conversion': f'original_conversion - {ZeroDivisionError} - Нет переходов',
