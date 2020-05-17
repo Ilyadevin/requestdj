@@ -33,22 +33,15 @@ def landing(request):
 
 
 def stats(request):
-    if counter_show['ab-test-arg=original'] == 0 and counter_click['from-landing=original'] == 0:
-        original = 0
-    else:
+    try:
         original = counter_click['from-landing=original'] / counter_show['ab-test-arg=original']
-    if counter_click['from-landing=test'] == 0 and counter_click['ab-test-arg=test'] == 0:
-        test = 0
-    else:
+    except ZeroDivisionError as error_zero:
+        original = 0
+    try:
         test = counter_show['ab-test-arg=test'] / counter_click['from-landing=test']
-    if original == 0 and test == 0 in request.GET:
-        return render_to_response('stats.html', context={
-            'original_conversion': f'original_conversion - {ZeroDivisionError} - Нет переходов',
-            'test_conversion': f'test_conversion - {ZeroDivisionError} - Нет переходов',
-        }
-                                  )
-    else:
-        return render_to_response('stats.html', context={'test_conversion': test,
-                                                         'original_conversion': original,
-                                                         }
-                                  )
+    except ZeroDivisionError as error_zero:
+        test = 0
+    return render_to_response('stats.html', context={'test_conversion': test,
+                                                     'original_conversion': original,
+                                                     }
+                              )
